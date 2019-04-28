@@ -19,7 +19,8 @@ The FAT test was executed on 1 to 3 elevators with four floors each.  The number
 
 There are eight modules in total; 
 * 'main' is the initialization module; it can either start multiple elevator simulations or one connected to elevator hardware. It starts and supervises the necessary child processes for the elevator to start running.
-* 
+> * 'driver_elixir' is the elevator hardware driver.
+> * 'poller' continiously polls 
 
 
 
