@@ -13,34 +13,17 @@ Main requirements:
 
 The FAT test was executed on 1 to 3 elevators with four floors each.  The number of elevators or floors are not hardcoded, and there is virtually no limit to the number of elevator or floors (of course there is a limit for performance and memory saving reasons).  We got 43/45 on our FAT test; the two missing points was because we did not store the state and orders on the controller (in this case the computer) in case of power loss. Although the orders were fulfilled on by another elevator, the affected elevator should still complete its previous orders when it is back online.
 
-## Solution
-
 ## Module introductions
 
-There are eight modules in total; 
-* 'main' is the initialization module; it can either start multiple elevator simulations or one connected to elevator hardware. It starts and supervises the necessary child processes for the elevator to start running.
-* "driver_elixir" is the code for the elevator hardware driver
-> its module 'ElevatorDriver' is supervised by the main process.
-* "poller" continiously polls
-> its module 'Poller' is supervised by the main process.
-* "poller" continiously polls
-> its module 'Poller' is supervised by the main process.
-
-
-
-These are the supervisor; 'main' the elevator statemachine, 'ElevatorState' (the networks module), Network, the distributor of orders, Distro, the pollers, Poller, and the driver for the elevator, ElevatorDriver. The helpers are Utils and NetworkUtils. 
-
-Main: Handles the initilization and supervising of the other modules. It restarts them at the previous state if they crash.
-
-ElevatorState: Keeps track of the elevator through the ElevatorDriver module. Keeps state as a floor number and a traveling direction or idle.
-
-Network: Establishes conection to other nodes on the network thorough UDP. This is done by brodcasting its node name. 
-
-Distro: Keeps track of all orders for all elevators on the network. These are kept as state in the GenServer. Gets new orders from the pollers. Also calculates which elevator is best able to handle new orders. 
-
-Poller: Routinly check the buttons on the elevator and updates the Distro, also checks the floorsensor to see if the elevator has arrived at a new floor.
-
-ElevatorDriver: Talks to the elevator hardware through TCP. 
+There are eight modules in total, one for initialization, five supervised children, and two helper libraries; 
+* main.ex has initialization procedures; it can either start multiple elevator simulations or one connected to elevator hardware. It starts and supervises the necessary child processes (supervised processes are mentioned below) for the elevator to start running.
+* driver_elixir.ex is the elevator hardware driver. The module 'ElevatorDriver' is one of the supervised processes
+* poller.ex is for polling I/O, The module 'Poller' is one of the supervised processes
+* network.ex handles node connection and communication. The module 'Network' is one of the supervised processes
+* distro.ex handles message passing between elevators. The module 'Distro' is one of the supervised processes.
+* state_machine.ex handles the state of the elevator. The module 'ElevatorState' is one of the supervised processes.
+* utils.ex is a library that defines structures being used in our state machine. 
+* network_utils.ex has user friendly network API for elixir. 
 
 ## Borrowed code
 The code in driver_elixir was prodived at the start of the project.
